@@ -1,0 +1,15 @@
+.jumbotron{
+    margin-bottom: 0;
+}
+
+.footer{
+    background-color: #3f51b5;
+}
+
+.footer-copyright{
+    background-color: rgba(0,0,0,0.2);
+} 
+
+.main{
+    padding: 20px;
+}
