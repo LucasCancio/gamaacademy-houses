@@ -8,6 +8,7 @@ function ListarQuartos() {
   const uri = "https://api.sheety.co/30b6e400-9023-4a15-8e6c-16aa4e3b1e72";
 
   getDataAsync(uri).then((quartos) => {
+    quartos = Filtrar(quartos, "apartamento".toUpperCase());
     InserirHTML(quartos);
   });
 }
@@ -35,6 +36,12 @@ function InserirHTML(quartos) {
             </div>
           </div>
         `;
+  });
+}
+
+function Filtrar(quartos, texto) {
+  return quartos.filter((quarto) => {
+    return quarto.name.toUpperCase().search(texto) >= 0 || quarto.property_type.toUpperCase().search(texto) >= 0;
   });
 }
 
