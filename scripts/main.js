@@ -9,15 +9,15 @@ function ListarQuartos() {
 
   getDataAsync(uri).then((quartos) => {
     quartos = Filtrar(quartos, "apartamento".toUpperCase());
+    quartos = AcrescentarInformacao(quartos);
     InserirHTML(quartos);
   });
 }
 
 function InserirHTML(quartos) {
   let catalogo = document.getElementById("catalogo");
-
   quartos.forEach((quarto) => {
-    let { photo, type, name, price } = quarto;
+    let { photo, type, name, price, descricao } = quarto;
 
     catalogo.innerHTML += `
         <div class="card">
@@ -25,7 +25,7 @@ function InserirHTML(quartos) {
             <div class="card-body">
               <h5 class="card-title">${name}</h5>
               <p class="card-text">
-                ${price}
+                ${price} Descrição ${descricao}
               </p>
             </div>
             <div class="card-footer">
@@ -43,6 +43,29 @@ function Filtrar(quartos, texto) {
 
     return nomeTemTexto || tipoTemTexto;
   });
+}
+
+function AcrescentarInformacao(quartos) {
+  function gerarDescricao() {
+    let numerosAleatorios = [];
+    for (let i = 0; i < 4; i++) {
+      let numeroAleatorio = Math.floor(Math.random() * 10);
+      while (numeroAleatorio == 0) {
+        numeroAleatorio = Math.floor(Math.random() * 10);
+      }
+
+      numerosAleatorios.push(numeroAleatorio);
+    }
+    let [hospedes, quartos, camas, banheiros] = numerosAleatorios;
+
+    return `${hospedes} hóspede(s) · ${quartos} quarto(s) · ${camas} cama(s) · ${banheiros} banheiro(s)`;
+  }
+
+  quartos.forEach((quarto) => {
+    quarto.descricao = gerarDescricao();
+  });
+
+  return quartos;
 }
 
 var paginaAtual = 1;
