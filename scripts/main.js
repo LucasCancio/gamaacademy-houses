@@ -1,30 +1,30 @@
-
 let quartos = [];
+let categorias = new Set();
 
-function ListarQuartos() {
-  const uri =
-    "https://v2-api.sheety.co/45a40658ca522915f0823cb3352a77c5/gamaHouses/houses";
+const uriAPI =
+  "https://v2-api.sheety.co/45a40658ca522915f0823cb3352a77c5/gamaHouses/houses";
 
-  getDataAsync(uri).then((data) => {
+function carregarQuartos() {
+  getDataAsync(uriAPI).then((data) => {
     quartos = data["houses"];
+    lista = quartos;
 
-    AcrescentarInformacao();
+    acrescentarInformacao();
     carregarPaginacao();
-    carregarMapa();
-    //quartos = Filtrar(quartos, "apartamento".toUpperCase());
+    carregarLista();
+
+    let tipos = [];
+    quartos.forEach((quarto) => {
+      tipos.push(quarto.propertyType);
+    });
+
+    categorias = new Set(tipos);
+
+    carregarCategorias();
   });
 }
 
-function Filtrar(texto) {
-  return quartos.filter((quarto) => {
-    let nomeTemTexto = quarto.name.toUpperCase().search(texto) >= 0;
-    let tipoTemTexto = quarto.property_type.toUpperCase().search(texto) >= 0;
-
-    return nomeTemTexto || tipoTemTexto;
-  });
-}
-
-function AcrescentarInformacao() {
+function acrescentarInformacao() {
   function gerarDescricao() {
     let numerosAleatorios = [];
     for (let i = 0; i < 4; i++) {
@@ -47,23 +47,25 @@ function AcrescentarInformacao() {
   return quartos;
 }
 
-function InserirHTML() {
+function atualizarQuartos(quartos) {
   let catalogo = document.getElementById("catalogo");
   let paginacao = document.getElementById("paginacao");
 
   catalogo.innerHTML = "";
   paginacao.innerHTML = "";
 
-  quartosPaginados.forEach((quarto) => {
-    let { photo, propertyType, name, price, descricao } = quarto;
+  quartos.forEach((quarto) => {
+    let { photo, propertyType, name, price, descricao, star } = quarto;
 
     catalogo.innerHTML += `
-        <div class="card">
+        <div class="card quarto">
             <img src="${photo}" class="card-img-top" alt="..." />
             <div class="card-body">
               <h5 class="card-title">${name}</h5>
               <p class="card-text">
-                ${price} Descrição ${descricao}
+              <span>R$${price}</span>
+              <span>Descrição ${descricao}</span>
+              <span>${star}estrelas</span>         
               </p>
             </div>
             <div class="card-footer">
@@ -74,9 +76,69 @@ function InserirHTML() {
   });
 
   paginacao.appendChild(criarPaginacao());
+
+  carregarMapa();
 }
 
-ListarQuartos();
+carregarQuartos();
+
+//CATEGORIA
+
+function carregarCategorias() {
+  let divCategorias = document.getElementById("categorias");
+
+  divCategorias.innerHTML = `
+  <option value=''>
+      Todas
+    </option>
+  `;
+
+  categorias.forEach((categoria) => {
+    divCategorias.innerHTML += `
+        <option value='${categoria}'>
+            ${categoria}
+          </option>
+        `;
+  });
+}
+
+//FILTRO E ORDENAÇÃO
+
+function filtrarPorCategoria(object) {
+  let categoria = object.value;
+
+  if (categoria == "") {
+    lista = quartos;
+  } else {
+    lista = quartos.filter((quarto) => {
+      let temCategoria =
+        quarto.propertyType.toUpperCase() == categoria.toUpperCase();
+      return temCategoria;
+    });
+  }
+
+  carregarPaginacao();
+  carregarLista();
+}
+
+function ordenarPorPreco() {
+  lista = quartos.sort(function (quarto1, quarto2) {
+    return quarto1.price - quarto2.price;
+  });
+
+  carregarPaginacao();
+  carregarLista();
+}
+
+function ordenarPorEstrela() {
+  lista = quartos.sort(function (quarto1, quarto2) {
+    return quarto1.star - quarto2.star;
+  });
+
+  carregarPaginacao();
+  carregarLista();
+  
+}
 
 // REQUEST HTTP
 
@@ -86,10 +148,10 @@ async function getDataAsync(uri) {
   return data;
 }
 
-
 //PAGINAÇAO
 
-let quartosPaginados = [];
+let lista = [];
+let listaPaginada = [];
 let paginaAtual = 1;
 let itensPorPagina = 6;
 let totalDePaginas = 1;
@@ -137,9 +199,8 @@ function criarPaginacao() {
 }
 
 function carregarPaginacao() {
-  totalDePaginas = Math.ceil(quartos.length / itensPorPagina);
+  totalDePaginas = Math.ceil(lista.length / itensPorPagina);
   paginaAtual = 1;
-  carregarLista();
 }
 
 function avancarPagina() {
@@ -159,11 +220,11 @@ function voltarPagina() {
 
 function carregarLista() {
   const inicio = (paginaAtual - 1) * itensPorPagina;
-  const final = begin + itensPorPagina;
+  const final = inicio + itensPorPagina;
 
-  quartosPaginados = quartos.slice(inicio, final);
+  listaPaginada = lista.slice(inicio, final);
 
-  InserirHTML();
+  atualizarQuartos(listaPaginada);
   validarBotoes();
 }
 
@@ -171,47 +232,49 @@ function validarBotoes() {
   let previousButton = document.getElementById("previousPage");
   let nextButton = document.getElementById("nextPage");
 
-  console.log(paginaAtual);
-  console.log(totalDePaginas);
+  nextButton.style.display = "none";
+  previousButton.style.display = "none";
 
-  if (paginaAtual == totalDePaginas) {
-    nextButton.style.display = "none";
-  } else {
+  console.log("pagina atual: ", paginaAtual);
+  console.log("total: ", totalDePaginas);
+
+  if (paginaAtual != totalDePaginas) {
     nextButton.style.display = "list-item";
-    if (paginaAtual == 1) {
-      previousButton.style.display = "none";
-    } else {
-      previousButton.style.display = "list-item";
-    }
+  }
+  if (paginaAtual != 1) {
+    previousButton.style.display = "list-item";
   }
 }
 
 //MAP
 
-let cordenadasSP = [-46.63018217699323, -23.5379366687732]; //long,lat
+const cordenadasSP = [-46.63018217699323, -23.5379366687732]; //long,lat
 
 function carregarMapa() {
+  let searchBox = document.getElementById("search-box");
+  searchBox.innerHTML = "";
+
   mapboxgl.accessToken =
     "pk.eyJ1Ijoic29sZGFkb3NzaiIsImEiOiJjazl5OXoxOWkwdDNjM21wczByZ201Y2lpIn0.AFfGNmlfd_6YKdXkQz3dOw";
-  var map = new mapboxgl.Map({
+  let map = new mapboxgl.Map({
     container: "map",
     style: "mapbox://styles/mapbox/streets-v11",
     center: cordenadasSP,
     zoom: 13,
   });
 
-  var geocoder = new MapboxGeocoder({
+  let geocoder = new MapboxGeocoder({
     accessToken: mapboxgl.accessToken,
     mapboxgl: mapboxgl,
   });
 
-  document.getElementById("geocoder").appendChild(geocoder.onAdd(map));
+  searchBox.appendChild(geocoder.onAdd(map));
   carregarMarcadores(map);
 }
 
 function carregarMarcadores(map) {
-  quartos.forEach((quarto) => {
-    var marcador = new mapboxgl.Marker()
+  listaPaginada.forEach((quarto) => {
+    let marcador = new mapboxgl.Marker()
       .setLngLat([quarto.longitude, quarto.latitude])
       .addTo(map);
   });
