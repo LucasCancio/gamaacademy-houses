@@ -1,8 +1,3 @@
-async function getDataAsync(uri) {
-  let response = await fetch(uri);
-  let data = await response.json();
-  return data;
-}
 
 let quartos = [];
 
@@ -14,7 +9,8 @@ function ListarQuartos() {
     quartos = data["houses"];
 
     AcrescentarInformacao();
-    loadPagination();
+    carregarPaginacao();
+    carregarMapa();
     //quartos = Filtrar(quartos, "apartamento".toUpperCase());
   });
 }
@@ -51,29 +47,67 @@ function AcrescentarInformacao() {
   return quartos;
 }
 
+function InserirHTML() {
+  let catalogo = document.getElementById("catalogo");
+  let paginacao = document.getElementById("paginacao");
+
+  catalogo.innerHTML = "";
+  paginacao.innerHTML = "";
+
+  quartosPaginados.forEach((quarto) => {
+    let { photo, propertyType, name, price, descricao } = quarto;
+
+    catalogo.innerHTML += `
+        <div class="card">
+            <img src="${photo}" class="card-img-top" alt="..." />
+            <div class="card-body">
+              <h5 class="card-title">${name}</h5>
+              <p class="card-text">
+                ${price} Descrição ${descricao}
+              </p>
+            </div>
+            <div class="card-footer">
+              <small class="text-muted">${propertyType}</small>
+            </div>
+          </div>
+        `;
+  });
+
+  paginacao.appendChild(criarPaginacao());
+}
+
 ListarQuartos();
+
+// REQUEST HTTP
+
+async function getDataAsync(uri) {
+  let response = await fetch(uri);
+  let data = await response.json();
+  return data;
+}
+
 
 //PAGINAÇAO
 
 let quartosPaginados = [];
-let currentPage = 1;
-let numberPerPage = 6;
-let numberOfPages = 1;
+let paginaAtual = 1;
+let itensPorPagina = 6;
+let totalDePaginas = 1;
 
-function createPagesItem() {
+function criarIndicesPagina() {
   let lines = "";
-  for (let i = 1; i <= numberOfPages; i++) {
-    if (i == currentPage) {
-      lines += `<li id="page-${i}" class="page-item active"><a class="page-link" onclick="MudarPagina(${i})">${i}</a></li>`;
+  for (let i = 1; i <= totalDePaginas; i++) {
+    if (i == paginaAtual) {
+      lines += `<li id="page-${i}" class="page-item active"><a class="page-link" onclick="mudarPagina(${i})">${i}</a></li>`;
     } else {
-      lines += `<li id="page-${i}" class="page-item"><a class="page-link" onclick="MudarPagina(${i})">${i}</a></li>`;
+      lines += `<li id="page-${i}" class="page-item"><a class="page-link" onclick="mudarPagina(${i})">${i}</a></li>`;
     }
   }
 
   return lines;
 }
 
-function createPagination() {
+function criarPaginacao() {
   let row = document.createElement("div");
   row.className = "row row-pagination";
 
@@ -82,14 +116,14 @@ function createPagination() {
         <nav>
             <ul class="pagination">
                 <li id="previousPage" class="page-item">
-                <a class="page-link" onclick="previousPage()" aria-label="Previous">
+                <a class="page-link" onclick="voltarPagina()" aria-label="Previous">
                     <span aria-hidden="true">&laquo;</span>
                     <span class="sr-only">Previous</span>
                 </a>
                 </li>
-                ${createPagesItem()}
+                ${criarIndicesPagina()}
                 <li id="nextPage" class="page-item">
-                <a class="page-link" onclick="nextPage()" aria-label="Next">
+                <a class="page-link" onclick="avancarPagina()" aria-label="Next">
                     <span aria-hidden="true">&raquo;</span>
                     <span class="sr-only">Next</span>
                 </a>
@@ -102,49 +136,49 @@ function createPagination() {
   return row;
 }
 
-function loadPagination() {
-  numberOfPages = Math.ceil(quartos.length / numberPerPage);
-  currentPage = 1;
-  loadList();
+function carregarPaginacao() {
+  totalDePaginas = Math.ceil(quartos.length / itensPorPagina);
+  paginaAtual = 1;
+  carregarLista();
 }
 
-function nextPage() {
-  currentPage += 1;
-  loadList();
+function avancarPagina() {
+  paginaAtual += 1;
+  carregarLista();
 }
 
-function MudarPagina(page) {
-  currentPage = page;
-  loadList();
+function mudarPagina(page) {
+  paginaAtual = page;
+  carregarLista();
 }
 
-function previousPage() {
-  currentPage -= 1;
-  loadList();
+function voltarPagina() {
+  paginaAtual -= 1;
+  carregarLista();
 }
 
-function loadList() {
-  const begin = (currentPage - 1) * numberPerPage;
-  const end = begin + numberPerPage;
+function carregarLista() {
+  const inicio = (paginaAtual - 1) * itensPorPagina;
+  const final = begin + itensPorPagina;
 
-  quartosPaginados = quartos.slice(begin, end);
+  quartosPaginados = quartos.slice(inicio, final);
 
   InserirHTML();
-  validateButtons();
+  validarBotoes();
 }
 
-function validateButtons() {
+function validarBotoes() {
   let previousButton = document.getElementById("previousPage");
   let nextButton = document.getElementById("nextPage");
 
-  console.log(currentPage);
-  console.log(numberOfPages);
+  console.log(paginaAtual);
+  console.log(totalDePaginas);
 
-  if (currentPage == numberOfPages) {
+  if (paginaAtual == totalDePaginas) {
     nextButton.style.display = "none";
   } else {
     nextButton.style.display = "list-item";
-    if (currentPage == 1) {
+    if (paginaAtual == 1) {
       previousButton.style.display = "none";
     } else {
       previousButton.style.display = "list-item";
@@ -152,49 +186,33 @@ function validateButtons() {
   }
 }
 
-function InserirHTML() {
-  let catalogo = document.getElementById("catalogo");
-  let paginacao = document.getElementById("container-paginacao");
+//MAP
 
-  catalogo.innerHTML = "";
-  paginacao.innerHTML = "";
+let cordenadasSP = [-46.63018217699323, -23.5379366687732]; //long,lat
 
-  quartosPaginados.forEach((quarto) => {
-    let { photo, type, name, price, descricao } = quarto;
-
-    catalogo.innerHTML += `
-        <div class="card">
-            <img src="${photo}" class="card-img-top" alt="..." />
-            <div class="card-body">
-              <h5 class="card-title">${name}</h5>
-              <p class="card-text">
-                ${price} Descrição ${descricao}
-              </p>
-            </div>
-            <div class="card-footer">
-              <small class="text-muted">${type}</small>
-            </div>
-          </div>
-        `;
+function carregarMapa() {
+  mapboxgl.accessToken =
+    "pk.eyJ1Ijoic29sZGFkb3NzaiIsImEiOiJjazl5OXoxOWkwdDNjM21wczByZ201Y2lpIn0.AFfGNmlfd_6YKdXkQz3dOw";
+  var map = new mapboxgl.Map({
+    container: "map",
+    style: "mapbox://styles/mapbox/streets-v11",
+    center: cordenadasSP,
+    zoom: 13,
   });
 
-  paginacao.appendChild(createPagination());
+  var geocoder = new MapboxGeocoder({
+    accessToken: mapboxgl.accessToken,
+    mapboxgl: mapboxgl,
+  });
+
+  document.getElementById("geocoder").appendChild(geocoder.onAdd(map));
+  carregarMarcadores(map);
 }
 
-let cordenadasSP=[-23.5639719, -46.6578489];
-
-var mymap = L.map("mapid").setView(cordenadasSP, 13);
-
-L.tileLayer(
-  "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw",
-  {
-    maxZoom: 18,
-    attribution:
-      'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-      '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-      'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-    id: "mapbox/streets-v11",
-    tileSize: 512,
-    zoomOffset: -1,
-  }
-).addTo(mymap);
+function carregarMarcadores(map) {
+  quartos.forEach((quarto) => {
+    var marcador = new mapboxgl.Marker()
+      .setLngLat([quarto.longitude, quarto.latitude])
+      .addTo(map);
+  });
+}

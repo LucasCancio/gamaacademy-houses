@@ -9,10 +9,6 @@
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
-    integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
-    crossorigin=""/>
-    
     <!-- Bootstrap CSS -->
     <link
       rel="stylesheet"
@@ -24,6 +20,13 @@
       src="https://kit.fontawesome.com/6f90f4e53c.js"
       crossorigin="anonymous"
     ></script>
+
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.js"></script>
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.css"
+      rel="stylesheet"
+    />
+
     <link rel="stylesheet" href="./css/styles.css" />
   </head>
   <body>
@@ -52,30 +55,9 @@
     </nav>
     <main class="container main">
       <div class="row justify-content-md-center">
-        <form class="form-inline">
-          <input
-            class="form-control mr-sm-2"
-            type="search"
-            placeholder="Search"
-            aria-label="Search"
-          />
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
-            Search
-          </button>
-        </form>
+        <div id="geocoder" class="geocoder"></div>
       </div>
-      <div class="row justify-content-md-center">
-        <form class="form-inline">
-          <input
-            class="form-control mr-sm-2"
-            type="datetime"
-            aria-label="Search"
-          />
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
-            Check In
-          </button>
-        </form>
-      </div>
+      <div id="map"></div>
       <br />
       <div class="row">
         <div class="card-deck" id="catalogo">
@@ -96,10 +78,7 @@
         </div>
       </div>
       <br />
-      <div id="container-paginacao">
-       
-      </div>
-      <div id="mapid"></div>
+      <div id="paginacao" class="container"></div>
     </main>
     <!-- Footer -->
     <footer class="page-footer footer font-small indigo darken-3">
@@ -160,14 +139,20 @@
       </div>
       <!-- Copyright -->
     </footer>
+    <!-- Footer -->
 
-     <!-- Make sure you put this AFTER Leaflet's CSS -->
- <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
- integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
- crossorigin=""></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.css"
+      type="text/css"
+    />
+    <!-- Promise polyfill script required to use Mapbox GL Geocoder in IE 11 -->
+    <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
 
     <script src="./scripts/main.js"></script>
-    <!-- Footer -->
+
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script
