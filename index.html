@@ -9,6 +9,10 @@
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+    integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+    crossorigin=""/>
+    
     <!-- Bootstrap CSS -->
     <link
       rel="stylesheet"
@@ -23,18 +27,6 @@
     <link rel="stylesheet" href="./css/styles.css" />
   </head>
   <body>
-    <header>
-      <div class="jumbotron jumbotron-fluid">
-        <div class="container">
-          <h1 class="display-3">Gama Academy - Houses</h1>
-          <p class="lead">
-            Web site desenvolvido para encontrar casas/apartamentos/moradias que
-            estejam disponíveis para aluguel
-          </p>
-          <hr class="my-2" />
-        </div>
-      </div>
-    </header>
     <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
       <button
         class="navbar-toggler"
@@ -72,6 +64,18 @@
           </button>
         </form>
       </div>
+      <div class="row justify-content-md-center">
+        <form class="form-inline">
+          <input
+            class="form-control mr-sm-2"
+            type="datetime"
+            aria-label="Search"
+          />
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
+            Check In
+          </button>
+        </form>
+      </div>
       <br />
       <div class="row">
         <div class="card-deck" id="catalogo">
@@ -92,19 +96,10 @@
         </div>
       </div>
       <br />
-      <div class="row justify-content-md-center">
-        <nav aria-label="Page navigation example">
-          <ul class="pagination">
-            <li class="page-item">
-              <a class="page-link" href="#">Previous</a>
-            </li>
-            <li class="page-item"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item"><a class="page-link" href="#">Next</a></li>
-          </ul>
-        </nav>
+      <div id="container-paginacao">
+       
       </div>
+      <div id="mapid"></div>
     </main>
     <!-- Footer -->
     <footer class="page-footer footer font-small indigo darken-3">
@@ -165,6 +160,11 @@
       </div>
       <!-- Copyright -->
     </footer>
+
+     <!-- Make sure you put this AFTER Leaflet's CSS -->
+ <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+ integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+ crossorigin=""></script>
 
     <script src="./scripts/main.js"></script>
     <!-- Footer -->

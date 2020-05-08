@@ -29,3 +29,6 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+#mapid { height: 180px; }
