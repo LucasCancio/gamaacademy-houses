@@ -65,7 +65,7 @@ function atualizarQuartos(quartos) {
               <p class="card-text">
               <span>R$${price}</span>
               <span>Descrição ${descricao}</span>
-              <span>${star}estrelas</span>         
+              <span><i class="fa fa-star" aria-hidden="true"></i>${star}</span>         
               </p>
             </div>
             <div class="card-footer">
@@ -104,6 +104,15 @@ function carregarCategorias() {
 
 //FILTRO E ORDENAÇÃO
 
+const ordenacao = {
+  DESLIGADO: 1,
+  CRESCENTE: 2,
+  DESCRECENTE: 3,
+};
+
+let ordenacaoPreco = ordenacao.DESLIGADO;
+let ordenacaoRelevancia = ordenacao.DESLIGADO;
+
 function filtrarPorCategoria(object) {
   let categoria = object.value;
 
@@ -119,25 +128,92 @@ function filtrarPorCategoria(object) {
 
   carregarPaginacao();
   carregarLista();
+
+  if (ordenacaoPreco != ordenacao.DESLIGADO) {
+    ordenarPorPreco();
+  } else if (ordenacaoRelevancia != ordenacao.DESLIGADO) {
+    ordenarPorRelevancia();
+  }
 }
 
 function ordenarPorPreco() {
-  lista = quartos.sort(function (quarto1, quarto2) {
-    return quarto1.price - quarto2.price;
-  });
+  switch (ordenacaoPreco) {
+    case ordenacao.DESLIGADO:
+      break;
+    case ordenacao.CRESCENTE:
+      lista = lista.sort(function (quarto1, quarto2) {
+        return quarto1.price - quarto2.price;
+      });
+      break;
+    case ordenacao.DESCRECENTE:
+      lista = lista.sort(function (quarto1, quarto2) {
+        return quarto2.price - quarto1.price;
+      });
+      break;
+  }
 
   carregarPaginacao();
   carregarLista();
+
+  ordenacaoRelevancia = ordenacao.DESLIGADO;
+
+  ordenacaoPreco++;
+  if (ordenacaoPreco > ordenacao.DESCRECENTE) {
+    ordenacaoPreco = ordenacao.DESLIGADO;
+  }
+
+  trocarOrdem();
 }
 
-function ordenarPorEstrela() {
-  lista = quartos.sort(function (quarto1, quarto2) {
-    return quarto1.star - quarto2.star;
-  });
+function ordenarPorRelevancia() {
+  switch (ordenacaoRelevancia) {
+    case ordenacao.DESLIGADO:
+      break;
+    case ordenacao.CRESCENTE:
+      lista = lista.sort(function (quarto1, quarto2) {
+        return quarto1.star - quarto2.star;
+      });
+      break;
+    case ordenacao.DESCRECENTE:
+      lista = lista.sort(function (quarto1, quarto2) {
+        return quarto2.star - quarto1.star;
+      });
+      break;
+  }
 
   carregarPaginacao();
   carregarLista();
-  
+
+  ordenacaoPreco = ordenacao.DESLIGADO;
+
+  ordenacaoRelevancia++;
+  if (ordenacaoRelevancia > ordenacao.DESCRECENTE) {
+    ordenacaoRelevancia = ordenacao.DESLIGADO;
+  }
+
+  trocarOrdem();
+}
+
+function trocarOrdem() {
+  let elementoRelevancia = document.getElementById("relevancia");
+  mudarClasseOrdenacao(elementoRelevancia,ordenacaoRelevancia); 
+
+  let elementoPreco = document.getElementById("preco");
+  mudarClasseOrdenacao(elementoPreco,ordenacaoPreco);
+}
+
+function mudarClasseOrdenacao(elemento, ordenacaoParaTrocar) {
+  switch (ordenacaoParaTrocar) {
+    case ordenacao.DESLIGADO:
+      elemento.className = "fa fa-fw fa-sort";
+      break;
+    case ordenacao.CRESCENTE:
+      elemento.className = "fa fa-fw fa-sort-up";
+      break;
+    case ordenacao.DESCRECENTE:
+      elemento.className = "fa fa-fw fa-sort-down";
+      break;
+  }
 }
 
 // REQUEST HTTP
@@ -234,9 +310,6 @@ function validarBotoes() {
 
   nextButton.style.display = "none";
   previousButton.style.display = "none";
-
-  console.log("pagina atual: ", paginaAtual);
-  console.log("total: ", totalDePaginas);
 
   if (paginaAtual != totalDePaginas) {
     nextButton.style.display = "list-item";

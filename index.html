@@ -16,20 +16,28 @@
       integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
       crossorigin="anonymous"
     />
+    <!--Font Awesome -->
     <script
       src="https://kit.fontawesome.com/6f90f4e53c.js"
       crossorigin="anonymous"
     ></script>
 
-    <script src="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.js"></script>
+    <!--Map -->
     <link
       href="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.css"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.css"
+      type="text/css"
+    />
+    <!--Map -->
 
     <link rel="stylesheet" href="./css/styles.css" />
   </head>
   <body>
+    <!-- Header -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
       <button
         class="navbar-toggler"
@@ -55,6 +63,9 @@
         </ul>
       </div>
     </nav>
+    <!-- Header -->
+
+    <!-- Main -->
     <main class="container main">
       <div class="form-group">
         <label for="">Categoria</label>
@@ -62,8 +73,8 @@
         </select>
       </div>     
       <div class="form-group">
-        <button class="form-control"><b>Preço</b> <i class="fa fa-fw fa-sort"></i></button>
-        <button class="form-control"><b>Relevancia</b> <i class="fa fa-fw fa-sort"></i></button>
+        <button class="form-control" onclick="ordenarPorPreco()"><b>Preço</b> <i class="fa fa-fw fa-sort" id="preco"></i></button>
+        <button class="form-control" onclick="ordenarPorRelevancia()"><b>Relevancia</b> <i class="fa fa-fw fa-sort" id="relevancia"></i></button>
       </div>
       
       
@@ -74,25 +85,13 @@
       <br />
       <div class="row">
         <div class="card-deck" id="catalogo">
-          <div class="card">
-            <img class="card-img-top" alt="..." />
-            <div class="card-body">
-              <h5 class="card-title">Card title</h5>
-              <p class="card-text">
-                This is a wider card with supporting text below as a natural
-                lead-in to additional content. This content is a little bit
-                longer.
-              </p>
-            </div>
-            <div class="card-footer">
-              <small class="text-muted">Last updated 3 mins ago</small>
-            </div>
-          </div>
         </div>
       </div>
       <br />
       <div id="paginacao" class="container"></div>
     </main>
+    <!-- Main -->
+
     <!-- Footer -->
     <footer class="page-footer footer font-small indigo darken-3">
       <!-- Footer Elements -->
@@ -154,17 +153,18 @@
     </footer>
     <!-- Footer -->
 
+
+    <!--Scripts-->
+    <script src="./scripts/main.js"></script>
+
+    
+    
+    <!--Map -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.js"></script>
     <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js"></script>
-    <link
-      rel="stylesheet"
-      href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.css"
-      type="text/css"
-    />
-    <!-- Promise polyfill script required to use Mapbox GL Geocoder in IE 11 -->
     <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
-
-    <script src="./scripts/main.js"></script>
+     <!--Map -->
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
