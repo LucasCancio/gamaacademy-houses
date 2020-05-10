@@ -21,6 +21,7 @@ function carregarQuartos() {
     categorias = new Set(tipos);
 
     carregarCategorias();
+    carregarMapa();
   });
 }
 
@@ -55,29 +56,34 @@ function atualizarQuartos(quartos) {
   paginacao.innerHTML = "";
 
   quartos.forEach((quarto) => {
-    let { photo, propertyType, name, price, descricao, star } = quarto;
-
-    catalogo.innerHTML += `
-        <div class="card quarto">
-            <img src="${photo}" class="card-img-top" alt="..." />
-            <div class="card-body">
-              <h5 class="card-title">${name}</h5>
-              <p class="card-text">
-              <span>R$${price}</span>
-              <span>Descrição ${descricao}</span>
-              <span><i class="fa fa-star" aria-hidden="true"></i>${star}</span>         
-              </p>
-            </div>
-            <div class="card-footer">
-              <small class="text-muted">${propertyType}</small>
-            </div>
-          </div>
-        `;
+    catalogo.innerHTML += criarCard(quarto);
   });
 
   paginacao.appendChild(criarPaginacao());
+}
 
-  carregarMapa();
+function criarCard(quarto) {
+  let { photo, propertyType, name, price, descricao, star } = quarto;
+
+  return `
+    <div class="card flex-row flex-wrap">          
+      <div class="card-header border-0">
+        <img src="${photo}" alt="" />
+      </div>
+      <div class="card-body px-2">
+        <div class="row">
+          <span class="col-10">
+          <i class="fa fa-home" aria-hidden="true"></i>${propertyType}</span>
+          <span class="col-2"><i class="fa fa-star" aria-hidden="true"></i>${star}</span>
+        </div>
+        <h4 class="card-title">${name}</h4>
+        <p class="card-text">${descricao}</p>
+        <div class="d-flex justify-content-center">
+          <b>R$${price}</b>
+          /mês
+        </div>          
+      </div>
+    </div>`;
 }
 
 carregarQuartos();
@@ -137,6 +143,14 @@ function filtrarPorCategoria(object) {
 }
 
 function ordenarPorPreco() {
+  ordenacaoRelevancia = ordenacao.DESLIGADO;
+
+  ordenacaoPreco++;
+  if (ordenacaoPreco > ordenacao.DESCRECENTE) {
+    ordenacaoPreco = ordenacao.DESLIGADO;
+  }
+  trocarOrdem();
+
   switch (ordenacaoPreco) {
     case ordenacao.DESLIGADO:
       break;
@@ -154,18 +168,18 @@ function ordenarPorPreco() {
 
   carregarPaginacao();
   carregarLista();
-
-  ordenacaoRelevancia = ordenacao.DESLIGADO;
-
-  ordenacaoPreco++;
-  if (ordenacaoPreco > ordenacao.DESCRECENTE) {
-    ordenacaoPreco = ordenacao.DESLIGADO;
-  }
-
-  trocarOrdem();
 }
 
 function ordenarPorRelevancia() {
+  ordenacaoPreco = ordenacao.DESLIGADO;
+
+  ordenacaoRelevancia++;
+  if (ordenacaoRelevancia > ordenacao.DESCRECENTE) {
+    ordenacaoRelevancia = ordenacao.DESLIGADO;
+  }
+
+  trocarOrdem();
+
   switch (ordenacaoRelevancia) {
     case ordenacao.DESLIGADO:
       break;
@@ -183,23 +197,14 @@ function ordenarPorRelevancia() {
 
   carregarPaginacao();
   carregarLista();
-
-  ordenacaoPreco = ordenacao.DESLIGADO;
-
-  ordenacaoRelevancia++;
-  if (ordenacaoRelevancia > ordenacao.DESCRECENTE) {
-    ordenacaoRelevancia = ordenacao.DESLIGADO;
-  }
-
-  trocarOrdem();
 }
 
 function trocarOrdem() {
   let elementoRelevancia = document.getElementById("relevancia");
-  mudarClasseOrdenacao(elementoRelevancia,ordenacaoRelevancia); 
+  mudarClasseOrdenacao(elementoRelevancia, ordenacaoRelevancia);
 
   let elementoPreco = document.getElementById("preco");
-  mudarClasseOrdenacao(elementoPreco,ordenacaoPreco);
+  mudarClasseOrdenacao(elementoPreco, ordenacaoPreco);
 }
 
 function mudarClasseOrdenacao(elemento, ordenacaoParaTrocar) {
@@ -282,16 +287,23 @@ function carregarPaginacao() {
 function avancarPagina() {
   paginaAtual += 1;
   carregarLista();
+  redirecionar();
 }
 
 function mudarPagina(page) {
   paginaAtual = page;
   carregarLista();
+  redirecionar();
 }
 
 function voltarPagina() {
   paginaAtual -= 1;
   carregarLista();
+  redirecionar();
+}
+
+function redirecionar() {
+  window.location.href = "#index";
 }
 
 function carregarLista() {
@@ -302,6 +314,7 @@ function carregarLista() {
 
   atualizarQuartos(listaPaginada);
   validarBotoes();
+  carregarMapa();
 }
 
 function validarBotoes() {
@@ -333,7 +346,7 @@ function carregarMapa() {
     container: "map",
     style: "mapbox://styles/mapbox/streets-v11",
     center: cordenadasSP,
-    zoom: 13,
+    zoom:8,
   });
 
   let geocoder = new MapboxGeocoder({
@@ -347,8 +360,40 @@ function carregarMapa() {
 
 function carregarMarcadores(map) {
   listaPaginada.forEach((quarto) => {
-    let marcador = new mapboxgl.Marker()
+    let el = document.createElement("div");
+    el.className = "marker";
+
+    console.log(el);
+    new mapboxgl.Marker(el)
       .setLngLat([quarto.longitude, quarto.latitude])
+      .setPopup(
+        new mapboxgl.Popup({ offset: 25 }) // add popups
+          .setHTML(criarMiniCard(quarto))
+      )
       .addTo(map);
   });
+}
+
+function criarMiniCard(quarto) {
+  let { photo, propertyType, name, price, descricao, star } = quarto;
+
+  return `<div class="card m-1">
+  <img class="card-img-top" src="${photo}" alt="Card image cap" />
+  <div class="card-body">
+    <div class="row">
+      <span class="col-8">
+        <i class="fa fa-home" aria-hidden="true"></i>${propertyType}</span
+      >
+      <span class="col-4"
+        ><i class="fa fa-star" aria-hidden="true"></i>${star}</span
+      >
+    </div>
+    <h4 class="card-title text-center">${name}</h4>
+    <p class="card-text text-center">${descricao}</p>
+    <div class="d-flex justify-content-center">
+      <b>R$${price}</b>
+      /mês
+    </div>
+  </div>
+</div>`;
 }
