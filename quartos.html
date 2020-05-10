@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>GamaHouses | Pagina Inicial</title>
+    <title>GamaHouses | Quartos</title>
     <!-- Required meta tags -->
     <meta charset="utf-8" />
     <meta
@@ -10,7 +10,7 @@
     />
 
     <link rel="icon" href="./assets/img/house-icon.png" type="image/x-icon" />
-
+    
     <!-- Bootstrap CSS -->
     <link
       rel="stylesheet"
@@ -37,9 +37,9 @@
     <!--Map -->
 
     <link rel="stylesheet" href="./css/styles.css" />
-    <link rel="stylesheet" href="./css/index.css" />
+    <link rel="stylesheet" href="./css/quartos.css" />
   </head>
-  <body onload="carregarMapa()">
+  <body onload="carregarQuartos()">
     <!-- Header -->
     <header
       class="header navbar navbar-expand-lg navbar-light fixed-top d-flex justify-content-between"
@@ -56,84 +56,61 @@
       </a>
 
       <span class="button-rounded profile">
-        <a
-          href="https://www.linkedin.com/in/lucas-camargo-cancio/"
-          target="_blank"
-        >
-          Lucas Cancio
-        </a>
+          <a href="https://www.linkedin.com/in/lucas-camargo-cancio/" target="_blank">
+            Lucas Cancio
+          </a>     
       </span>
     </header>
     <!-- Header -->
 
     <!-- Main -->
     <main class="main conteudo" id="index">
-      <div class="container-fluid">
-        <div class="row d-flex justify-content-center p-4">
-          <div class="form-group">
-            <h3 class="text-center pb-2">Para onde você vai?</h3>
-            <div class="input-group">
-              <div id="search-box" class="geocoder input-group-prepend"></div>
-              <button
-                class="btn btn-danger btn-buscar form-control align-self-center"
-                onclick="mudarDePagina()"
+      <div class="container-fluid mt-4">
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group row">
+              <label for="" class="col-4 col-form-label text-center"
+                >Categoria</label
               >
-                <i class="fa fa-search fa-lg"></i> Buscar
-              </button>
-            </div>
-          </div>
-        </div>
-        <div class="container">
-          <div id="map"></div>
-        </div>
-        <div class="row p-5 d-flex justify-content-center">
-          <h1>Podemos estar afastados, mas vamos superar isso juntos.</h1>
-        </div>
-        <div class="row container p-4 mx-auto images">
-          <div class="card-deck">
-            <div class="card">
-              <img
-                class="card-img-top"
-                src="https://a0.muscache.com/pictures/923664c7-45f6-4ff0-8891-11cb6df25a66.jpg"
-                alt=""
-              />
-              <div class="card-body">
-                <h4 class="card-title">Experiências online</h4>
-                <p class="card-text">
-                  Atividades únicas que podemos fazer juntos, oferecidas por
-                  anfitriões de todo o mundo.
-                </p>
-              </div>
-            </div>
-            <div class="card">
-              <img
-                class="card-img-top"
-                src="https://a0.muscache.com/pictures/56e33ab9-d581-4333-be11-69286231cee5.jpg"
-                alt=""
-              />
-              <div class="card-body">
-                <h4 class="card-title">Estadias prolongadas</h4>
-                <p class="card-text">
-                  Sinta-se em casa no Airbnb com estadias de um mês ou mais.
-                </p>
-              </div>
-            </div>
-            <div class="card">
-              <img
-                class="card-img-top"
-                src="https://a0.muscache.com/pictures/652b1058-209f-45f7-8383-f3e4d90ee302.jpg"
-                alt=""
-              />
-              <div class="card-body">
-                <h4 class="card-title">Informações atualizadas</h4>
-                <p class="card-text">
-                  Saiba mais sobre as ações que estamos tomando em relação à
-                  COVID-19.
-                </p>
+              <div class="col-8">
+                <select
+                  id="categorias"
+                  class="form-control"
+                  onchange="filtrarPorCategoria(this)"
+                >
+                </select>
               </div>
             </div>
           </div>
+          <div class="col-sm-3">
+            <button
+              class="form-control button-rounded"
+              onclick="ordenarPorPreco()"
+            >
+              <b>Preço</b> <i class="fa fa-fw fa-sort" id="preco"></i>
+            </button>
+          </div>
+          <div class="col-sm-3">
+            <button
+              class="form-control button-rounded"
+              onclick="ordenarPorRelevancia()"
+            >
+              <b>Relevancia</b>
+              <i class="fa fa-fw fa-sort" id="relevancia"></i>
+            </button>
+          </div>
         </div>
+        <div>
+          <div id="catalogo">
+          </div>
+        </div>
+        <div
+          id="paginacao"
+          class="container d-flex justify-content-center"
+        ></div>
+      </div>
+      <div>
+        <div id="map"></div>
       </div>
     </main>
     <!-- Main -->
@@ -195,10 +172,7 @@
             <i class="fab fa-github fa-lg white-text"> </i>
           </a>
           <!--Linkedin -->
-          <a
-            href="https://www.linkedin.com/in/lucas-camargo-cancio/"
-            target="_blank"
-          >
+          <a href="https://www.linkedin.com/in/lucas-camargo-cancio/" target="_blank">
             <i class="fab fa-linkedin-in fa-lg white-text"> </i>
           </a>
         </div>

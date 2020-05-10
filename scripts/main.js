@@ -21,7 +21,6 @@ function carregarQuartos() {
     categorias = new Set(tipos);
 
     carregarCategorias();
-    carregarMapa();
   });
 }
 
@@ -65,28 +64,25 @@ function atualizarQuartos(quartos) {
 function criarCard(quarto) {
   let { photo, propertyType, name, price, descricao, star } = quarto;
 
-  return `
-    <div class="card flex-row flex-wrap">          
-      <div class="card-header border-0">
-        <img src="${photo}" alt="" />
-      </div>
-      <div class="card-body px-2">
-        <div class="row">
-          <span class="col-10">
-          <i class="fa fa-home" aria-hidden="true"></i>${propertyType}</span>
-          <span class="col-2"><i class="fa fa-star" aria-hidden="true"></i>${star}</span>
-        </div>
-        <h4 class="card-title">${name}</h4>
-        <p class="card-text">${descricao}</p>
-        <div class="d-flex justify-content-center">
-          <b>R$${price}</b>
-          /mês
-        </div>          
-      </div>
-    </div>`;
+  return `<div class="card m-1">
+  <img class="card-img-top" src="${photo}" alt="Card image cap" />
+  <div class="card-body">
+    <div class="d-flex justify-content-between">
+      <span>
+        <i class="fa fa-home" aria-hidden="true"></i>${propertyType}
+        </span>
+      <span><i class="fa fa-star" aria-hidden="true"></i>${star}</span>
+    </div>
+    <h4 class="card-title text-center">${name}</h4>
+    <p class="card-text text-center">${descricao}</p>
+    <div class="d-flex justify-content-center">
+      <b>R$${price}</b>
+      /mês
+    </div>
+  </div>
+</div>`;
 }
 
-carregarQuartos();
 
 //CATEGORIA
 
@@ -334,19 +330,25 @@ function validarBotoes() {
 
 //MAP
 
-const cordenadasSP = [-46.63018217699323, -23.5379366687732]; //long,lat
+const coordenadasSP = [-46.63018217699323, -23.5379366687732]; //longitude,latitude
+let coordenadaAtual = coordenadasSP;
+
+let longitudeAtual;
+let latitudeAtual;
 
 function carregarMapa() {
-  let searchBox = document.getElementById("search-box");
-  searchBox.innerHTML = "";
+  verificarParametros();
+
+  
 
   mapboxgl.accessToken =
     "pk.eyJ1Ijoic29sZGFkb3NzaiIsImEiOiJjazl5OXoxOWkwdDNjM21wczByZ201Y2lpIn0.AFfGNmlfd_6YKdXkQz3dOw";
-  let map = new mapboxgl.Map({
+
+  map = new mapboxgl.Map({
     container: "map",
     style: "mapbox://styles/mapbox/streets-v11",
-    center: cordenadasSP,
-    zoom:8,
+    center: coordenadaAtual,
+    zoom: 8,
   });
 
   let geocoder = new MapboxGeocoder({
@@ -354,46 +356,64 @@ function carregarMapa() {
     mapboxgl: mapboxgl,
   });
 
-  searchBox.appendChild(geocoder.onAdd(map));
+  new mapboxgl.Marker()
+  .setLngLat(coordenadaAtual)
+  .addTo(map);
+
+  geocoder.on("result", function (ev) {
+    longitudeAtual = ev.result.geometry.coordinates[0];
+    latitudeAtual = ev.result.geometry.coordinates[1];
+  });
+
+  let searchBox = document.getElementById("search-box");
+  if(searchBox != undefined){
+    searchBox.innerHTML = "";
+    searchBox.appendChild(geocoder.onAdd(map));
+  }
+  
+
   carregarMarcadores(map);
 }
+
+let map;
 
 function carregarMarcadores(map) {
   listaPaginada.forEach((quarto) => {
     let el = document.createElement("div");
     el.className = "marker";
 
-    console.log(el);
     new mapboxgl.Marker(el)
       .setLngLat([quarto.longitude, quarto.latitude])
       .setPopup(
         new mapboxgl.Popup({ offset: 25 }) // add popups
-          .setHTML(criarMiniCard(quarto))
+          .setHTML(criarCard(quarto))
       )
       .addTo(map);
   });
 }
 
-function criarMiniCard(quarto) {
-  let { photo, propertyType, name, price, descricao, star } = quarto;
 
-  return `<div class="card m-1">
-  <img class="card-img-top" src="${photo}" alt="Card image cap" />
-  <div class="card-body">
-    <div class="row">
-      <span class="col-8">
-        <i class="fa fa-home" aria-hidden="true"></i>${propertyType}</span
-      >
-      <span class="col-4"
-        ><i class="fa fa-star" aria-hidden="true"></i>${star}</span
-      >
-    </div>
-    <h4 class="card-title text-center">${name}</h4>
-    <p class="card-text text-center">${descricao}</p>
-    <div class="d-flex justify-content-center">
-      <b>R$${price}</b>
-      /mês
-    </div>
-  </div>
-</div>`;
+function verificarParametros() {
+  var queryString = decodeURIComponent(window.location.search);
+
+  queryString = queryString.substring(1);
+  
+  if (queryString != "") {
+    let queryString = decodeURIComponent(window.location.search);
+    let queries = queryString.split("&");
+
+    if(queries.length == 2){
+      latitudeAtual = parseFloat(queries[0].split('=')[1]);
+      longitudeAtual =  parseFloat(queries[1].split('=')[1]);
+      coordenadaAtual = [longitudeAtual,latitudeAtual];
+    }    
+  }
+}
+
+function mudarDePagina() {
+  let queryString="";
+  if(latitudeAtual != undefined && longitudeAtual !=undefined){
+    queryString = `?lat=${latitudeAtual}&long=${longitudeAtual}`;
+  }
+  window.location.href = "quartos.html" + queryString;
 }

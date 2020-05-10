@@ -1,0 +1,60 @@
+/* MAP */
+#map {
+  width: 100%;
+  height: 92.8vh;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 50px;
+  display: flex;
+}
+
+#map > canvas {
+  height: 100% !important;
+}
+
+.mapboxgl-popup-content .card-img-top{
+  height: auto;
+}
+
+
+
+/* QUARTOS */
+
+#catalogo {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 20px;
+  padding: 20px;
+}
+
+.conteudo {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  grid-gap: 20px;
+}
+
+.card-img-top{
+  height: 18rem;
+}
+
+
+
+
+@media (max-width: 800px) {
+.conteudo{
+  grid-template-columns: 1fr;
+}
+
+#map { 
+  width: 100%; 
+  height: 30vh;
+  position: block;
+  
+}
+}
+
+@media (max-width: 900px) {
+  #catalogo {
+  grid-template-columns: 1fr;
+}
+}

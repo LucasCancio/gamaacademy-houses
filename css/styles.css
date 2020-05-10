@@ -1,105 +1,56 @@
-ul{
+ul {
   list-style: none;
   padding: 0;
 }
-
-.jumbotron {
-  margin-bottom: 0;
+a{
+  color: #ff5a60;
+}
+a:hover{
+  color: inherit;
+  text-decoration: none;
 }
 
-.header{
+/* HEADER */
+
+.header {
   background-color: white;
   box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.18);
 }
 
-.footer{
-  background-color: white;
-  border-top: 1px solid #DDDDDD;
-}
-
-.footer-elements{
-  padding: 40px;
-}
-.footer-link{
-  color: #222222;
-}
-
-.footer-copyright {
-  background-color: #f8f9fa;
-}
-
-.main {
-  margin: 3.75rem 0 0 0;
-} 
-
-#catalogo {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-gap: 20px;
-  padding: 20px;
-}
-
-.card-img-top {
-  width: 100%;
-}
-
-
-.button-rounded{
-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.18);
-padding: 0 16px;
-transition: box-shadow 0.2s ease;
-color: #222222;
-border: 1px solid #EBEBEB;
-text-align: center;
-
-border-radius: 21px;
-height: 42px;
-
-display: flex;
-align-items: center;
-justify-content: center;
-}
-
-.button-rounded:hover{
-  box-shadow: 1px 1px 10px 1px rgba(0, 0, 0, 0.18);
-}
-
-#map { 
-  width: 100%; 
-  height: 92vh;
-  position: -webkit-sticky;
-  position: sticky;
-  top: 50px;
-  display: flex;
-}
-
-#map > canvas{
-  height: 100% !important;
-}
-
-
-.conteudo{
-  display: grid;
-  grid-template-columns: 3fr 2fr;
-  grid-gap: 20px;
-}
-
-
-#logo{
+#logo {
   color: #ff5a60;
   font-weight: bold;
 }
 
-.redes-sociais{
-  display: flex;
-  justify-content: center;
-}
-.redes-sociais a{
-padding: 10px;
+/* MAIN */
+
+.main {
+  margin: 3.75rem 0 0 0;
 }
 
+.button-rounded {
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.18);
+  padding: 0 16px;
+  transition: box-shadow 0.2s ease;
+  color: #ff5a60;
+  border: 1px solid #ebebeb;
+  text-align: center;
+
+  border-radius: 21px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button-rounded:hover {
+  box-shadow: 1px 1px 10px 1px rgba(0, 0, 0, 0.18);
+}
+
+/* MAP */
 .marker {
-  background-image: url('../assets/img/house-icon.png');
+  background-image: url("../assets/img/house-icon.png");
   background-size: cover;
   width: 50px;
   height: 50px;
@@ -107,23 +58,35 @@ padding: 10px;
   cursor: pointer;
 }
 
+/* FOOTER */
+
+.footer {
+  background-color: white;
+  border-top: 1px solid #dddddd;
+}
+
+.footer-elements {
+  padding: 40px;
+}
+.footer-link {
+  color: #222222;
+}
+
+.footer-copyright {
+  background-color: #f8f9fa;
+}
+
+.redes-sociais {
+  display: flex;
+  justify-content: center;
+}
+.footer-copyright a {
+  padding: 10px;
+
+}
+
 @media (max-width: 800px) {
-  #catalogo {
-  grid-template-columns: 1fr;
-}
-.footer-elements{
-  display: none;
-}
-
-.conteudo{
-  grid-template-columns: 1fr;
-}
-
-#map { 
-  width: 100%; 
-  height: 30vh;
-  position: block;
-  
-}
-
+  .footer-elements {
+    display: none;
+  }
 }
