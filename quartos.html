@@ -10,7 +10,7 @@
     />
 
     <link rel="icon" href="./assets/img/house-icon.png" type="image/x-icon" />
-    
+
     <!-- Bootstrap CSS -->
     <link
       rel="stylesheet"
@@ -39,7 +39,7 @@
     <link rel="stylesheet" href="./css/styles.css" />
     <link rel="stylesheet" href="./css/quartos.css" />
   </head>
-  <body onload="carregarQuartos()">
+  <body>
     <!-- Header -->
     <header
       class="header navbar navbar-expand-lg navbar-light fixed-top d-flex justify-content-between"
@@ -56,9 +56,12 @@
       </a>
 
       <span class="button-rounded profile">
-          <a href="https://www.linkedin.com/in/lucas-camargo-cancio/" target="_blank">
-            Lucas Cancio
-          </a>     
+        <a
+          href="https://www.linkedin.com/in/lucas-camargo-cancio/"
+          target="_blank"
+        >
+          Lucas Cancio
+        </a>
       </span>
     </header>
     <!-- Header -->
@@ -73,36 +76,24 @@
                 >Categoria</label
               >
               <div class="col-8">
-                <select
-                  id="categorias"
-                  class="form-control"
-                  onchange="filtrarPorCategoria(this)"
-                >
-                </select>
+                <select id="categorias" class="form-control"> </select>
               </div>
             </div>
           </div>
           <div class="col-sm-3">
-            <button
-              class="form-control button-rounded"
-              onclick="ordenarPorPreco()"
-            >
+            <button id="btnPreco" class="form-control button-rounded">
               <b>Preço</b> <i class="fa fa-fw fa-sort" id="preco"></i>
             </button>
           </div>
           <div class="col-sm-3">
-            <button
-              class="form-control button-rounded"
-              onclick="ordenarPorRelevancia()"
-            >
+            <button id="btnRelevancia" class="form-control button-rounded">
               <b>Relevancia</b>
               <i class="fa fa-fw fa-sort" id="relevancia"></i>
             </button>
           </div>
         </div>
         <div>
-          <div id="catalogo">
-          </div>
+          <div id="catalogo"></div>
         </div>
         <div
           id="paginacao"
@@ -172,7 +163,10 @@
             <i class="fab fa-github fa-lg white-text"> </i>
           </a>
           <!--Linkedin -->
-          <a href="https://www.linkedin.com/in/lucas-camargo-cancio/" target="_blank">
+          <a
+            href="https://www.linkedin.com/in/lucas-camargo-cancio/"
+            target="_blank"
+          >
             <i class="fab fa-linkedin-in fa-lg white-text"> </i>
           </a>
         </div>
@@ -181,7 +175,7 @@
     <!-- Footer -->
 
     <!--Scripts-->
-    <script src="./scripts/main.js"></script>
+    <script type="module" src="./scripts/main.js"></script>
 
     <!--Map -->
     <script src="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.js"></script>

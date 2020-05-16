@@ -1,8 +1,18 @@
+import {
+  filtrarPorCategoria,
+  ordenarPorPreco,
+  ordenarPorRelevancia,
+} from "./filter.js";
+
+import { getDataAsync } from "./request-http.js";
+
 let quartos = [];
 let categorias = new Set();
 
 const uriAPI =
   "https://v2-api.sheety.co/45a40658ca522915f0823cb3352a77c5/gamaHouses/houses";
+
+document.querySelector('body').addEventListener("load", carregarQuartos());
 
 function carregarQuartos() {
   getDataAsync(uriAPI).then((data) => {
@@ -83,7 +93,6 @@ function criarCard(quarto) {
 </div>`;
 }
 
-
 //CATEGORIA
 
 function carregarCategorias() {
@@ -106,124 +115,40 @@ function carregarCategorias() {
 
 //FILTRO E ORDENAÇÃO
 
-const ordenacao = {
-  DESLIGADO: 1,
-  CRESCENTE: 2,
-  DESCRECENTE: 3,
+const ordenacoes = {
+  CATEGORIA: 0,
+  RELEVANCIA: 1,
+  PRECO: 2,
 };
 
-let ordenacaoPreco = ordenacao.DESLIGADO;
-let ordenacaoRelevancia = ordenacao.DESLIGADO;
-
-function filtrarPorCategoria(object) {
-  let categoria = object.value;
-
-  if (categoria == "") {
-    lista = quartos;
-  } else {
-    lista = quartos.filter((quarto) => {
-      let temCategoria =
-        quarto.propertyType.toUpperCase() == categoria.toUpperCase();
-      return temCategoria;
-    });
-  }
-
-  carregarPaginacao();
-  carregarLista();
-
-  if (ordenacaoPreco != ordenacao.DESLIGADO) {
-    ordenarPorPreco();
-  } else if (ordenacaoRelevancia != ordenacao.DESLIGADO) {
-    ordenarPorRelevancia();
-  }
-}
-
-function ordenarPorPreco() {
-  ordenacaoRelevancia = ordenacao.DESLIGADO;
-
-  ordenacaoPreco++;
-  if (ordenacaoPreco > ordenacao.DESCRECENTE) {
-    ordenacaoPreco = ordenacao.DESLIGADO;
-  }
-  trocarOrdem();
-
-  switch (ordenacaoPreco) {
-    case ordenacao.DESLIGADO:
+const aplicarOrdenacao = (ordenacao) => {
+  switch (ordenacao) {
+    case ordenacoes.CATEGORIA:
+      lista = filtrarPorCategoria(categoria, quartos);
       break;
-    case ordenacao.CRESCENTE:
-      lista = lista.sort(function (quarto1, quarto2) {
-        return quarto1.price - quarto2.price;
-      });
+    case ordenacoes.RELEVANCIA:
+      lista = ordenarPorRelevancia(lista);
       break;
-    case ordenacao.DESCRECENTE:
-      lista = lista.sort(function (quarto1, quarto2) {
-        return quarto2.price - quarto1.price;
-      });
+    case ordenacoes.PRECO:
+      lista = ordenarPorPreco(lista);
       break;
   }
 
   carregarPaginacao();
   carregarLista();
-}
+};
 
-function ordenarPorRelevancia() {
-  ordenacaoPreco = ordenacao.DESLIGADO;
+document.querySelector("#categorias").addEventListener("change", () => {
+  aplicarOrdenacao(ordenacoes.CATEGORIA);
+});
 
-  ordenacaoRelevancia++;
-  if (ordenacaoRelevancia > ordenacao.DESCRECENTE) {
-    ordenacaoRelevancia = ordenacao.DESLIGADO;
-  }
+document.querySelector("#btnPreco").addEventListener("click", () => {
+  aplicarOrdenacao(ordenacoes.PRECO);
+});
 
-  trocarOrdem();
-
-  switch (ordenacaoRelevancia) {
-    case ordenacao.DESLIGADO:
-      break;
-    case ordenacao.CRESCENTE:
-      lista = lista.sort(function (quarto1, quarto2) {
-        return quarto1.star - quarto2.star;
-      });
-      break;
-    case ordenacao.DESCRECENTE:
-      lista = lista.sort(function (quarto1, quarto2) {
-        return quarto2.star - quarto1.star;
-      });
-      break;
-  }
-
-  carregarPaginacao();
-  carregarLista();
-}
-
-function trocarOrdem() {
-  let elementoRelevancia = document.getElementById("relevancia");
-  mudarClasseOrdenacao(elementoRelevancia, ordenacaoRelevancia);
-
-  let elementoPreco = document.getElementById("preco");
-  mudarClasseOrdenacao(elementoPreco, ordenacaoPreco);
-}
-
-function mudarClasseOrdenacao(elemento, ordenacaoParaTrocar) {
-  switch (ordenacaoParaTrocar) {
-    case ordenacao.DESLIGADO:
-      elemento.className = "fa fa-fw fa-sort";
-      break;
-    case ordenacao.CRESCENTE:
-      elemento.className = "fa fa-fw fa-sort-up";
-      break;
-    case ordenacao.DESCRECENTE:
-      elemento.className = "fa fa-fw fa-sort-down";
-      break;
-  }
-}
-
-// REQUEST HTTP
-
-async function getDataAsync(uri) {
-  let response = await fetch(uri);
-  let data = await response.json();
-  return data;
-}
+document.querySelector("#btnRelevancia").addEventListener("click", () => {
+  aplicarOrdenacao(ordenacoes.RELEVANCIA);
+});
 
 //PAGINAÇAO
 
@@ -339,8 +264,6 @@ let latitudeAtual;
 function carregarMapa() {
   verificarParametros();
 
-  
-
   mapboxgl.accessToken =
     "pk.eyJ1Ijoic29sZGFkb3NzaiIsImEiOiJjazl5OXoxOWkwdDNjM21wczByZ201Y2lpIn0.AFfGNmlfd_6YKdXkQz3dOw";
 
@@ -356,9 +279,7 @@ function carregarMapa() {
     mapboxgl: mapboxgl,
   });
 
-  new mapboxgl.Marker()
-  .setLngLat(coordenadaAtual)
-  .addTo(map);
+  new mapboxgl.Marker().setLngLat(coordenadaAtual).addTo(map);
 
   geocoder.on("result", function (ev) {
     longitudeAtual = ev.result.geometry.coordinates[0];
@@ -366,11 +287,10 @@ function carregarMapa() {
   });
 
   let searchBox = document.getElementById("search-box");
-  if(searchBox != undefined){
+  if (searchBox != undefined) {
     searchBox.innerHTML = "";
     searchBox.appendChild(geocoder.onAdd(map));
   }
-  
 
   carregarMarcadores(map);
 }
@@ -392,28 +312,19 @@ function carregarMarcadores(map) {
   });
 }
 
-
 function verificarParametros() {
   var queryString = decodeURIComponent(window.location.search);
 
   queryString = queryString.substring(1);
-  
+
   if (queryString != "") {
     let queryString = decodeURIComponent(window.location.search);
     let queries = queryString.split("&");
 
-    if(queries.length == 2){
-      latitudeAtual = parseFloat(queries[0].split('=')[1]);
-      longitudeAtual =  parseFloat(queries[1].split('=')[1]);
-      coordenadaAtual = [longitudeAtual,latitudeAtual];
-    }    
+    if (queries.length == 2) {
+      latitudeAtual = parseFloat(queries[0].split("=")[1]);
+      longitudeAtual = parseFloat(queries[1].split("=")[1]);
+      coordenadaAtual = [longitudeAtual, latitudeAtual];
+    }
   }
-}
-
-function mudarDePagina() {
-  let queryString="";
-  if(latitudeAtual != undefined && longitudeAtual !=undefined){
-    queryString = `?lat=${latitudeAtual}&long=${longitudeAtual}`;
-  }
-  window.location.href = "quartos.html" + queryString;
 }
