@@ -39,7 +39,7 @@
     <link rel="stylesheet" href="./css/styles.css" />
     <link rel="stylesheet" href="./css/index.css" />
   </head>
-  <body onload="carregarMapa()">
+  <body>
     <!-- Header -->
     <header
       class="header navbar navbar-expand-lg navbar-light fixed-top d-flex justify-content-between"
@@ -75,8 +75,8 @@
             <div class="input-group">
               <div id="search-box" class="geocoder input-group-prepend"></div>
               <button
+                id="btnMudarPagina"
                 class="btn btn-danger btn-buscar form-control align-self-center"
-                onclick="mudarDePagina()"
               >
                 <i class="fa fa-search fa-lg"></i> Buscar
               </button>

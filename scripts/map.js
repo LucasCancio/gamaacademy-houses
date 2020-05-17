@@ -1,10 +1,13 @@
+import { criarCard } from "./components.js";
+
 const coordenadasSP = [-46.63018217699323, -23.5379366687732]; //longitude,latitude
 let coordenadaAtual = coordenadasSP;
 
+let map;
 let longitudeAtual;
 let latitudeAtual;
 
-function carregarMapa() {
+function carregarMapa(quartos=[]) {
   verificarParametros();
   
   mapboxgl.accessToken =
@@ -37,14 +40,15 @@ function carregarMapa() {
     searchBox.appendChild(geocoder.onAdd(map));
   }
   
+  
 
-  carregarMarcadores(map);
+  carregarMarcadores(map,quartos);
+
+  console.log(">>> Mapa carregado!");
 }
 
-let map;
-
-function carregarMarcadores(map) {
-  listaPaginada.forEach((quarto) => {
+function carregarMarcadores(map,quartos) {
+  quartos.forEach((quarto) => {
     let el = document.createElement("div");
     el.className = "marker";
 
@@ -57,3 +61,22 @@ function carregarMarcadores(map) {
       .addTo(map);
   });
 }
+
+function verificarParametros() {
+  var queryString = decodeURIComponent(window.location.search);
+
+  queryString = queryString.substring(1);
+
+  if (queryString != "") {
+    let queryString = decodeURIComponent(window.location.search);
+    let queries = queryString.split("&");
+
+    if (queries.length == 2) {
+      latitudeAtual = parseFloat(queries[0].split("=")[1]);
+      longitudeAtual = parseFloat(queries[1].split("=")[1]);
+      coordenadaAtual = [longitudeAtual, latitudeAtual];
+    }
+  }
+}
+
+export {carregarMapa, longitudeAtual, latitudeAtual}

@@ -6,6 +6,10 @@ import {
 
 import { getDataAsync } from "./request-http.js";
 
+import { carregarMapa } from "./map.js";
+
+import { criarCard } from "./components.js";
+
 let quartos = [];
 let categorias = new Set();
 
@@ -71,27 +75,10 @@ function atualizarQuartos(quartos) {
   paginacao.appendChild(criarPaginacao());
 }
 
-function criarCard(quarto) {
-  let { photo, propertyType, name, price, descricao, star } = quarto;
 
-  return `<div class="card m-1">
-  <img class="card-img-top" src="${photo}" alt="Card image cap" />
-  <div class="card-body">
-    <div class="d-flex justify-content-between">
-      <span>
-        <i class="fa fa-home" aria-hidden="true"></i>${propertyType}
-        </span>
-      <span><i class="fa fa-star" aria-hidden="true"></i>${star}</span>
-    </div>
-    <h4 class="card-title text-center">${name}</h4>
-    <p class="card-text text-center">${descricao}</p>
-    <div class="d-flex justify-content-center">
-      <b>R$${price}</b>
-      /mês
-    </div>
-  </div>
-</div>`;
-}
+
+
+
 
 //CATEGORIA
 
@@ -235,7 +222,7 @@ function carregarLista() {
 
   atualizarQuartos(listaPaginada);
   validarBotoes();
-  carregarMapa();
+  carregarMapa(listaPaginada);
 }
 
 function validarBotoes() {
@@ -250,81 +237,5 @@ function validarBotoes() {
   }
   if (paginaAtual != 1) {
     previousButton.style.display = "list-item";
-  }
-}
-
-//MAP
-
-const coordenadasSP = [-46.63018217699323, -23.5379366687732]; //longitude,latitude
-let coordenadaAtual = coordenadasSP;
-
-let longitudeAtual;
-let latitudeAtual;
-
-function carregarMapa() {
-  verificarParametros();
-
-  mapboxgl.accessToken =
-    "pk.eyJ1Ijoic29sZGFkb3NzaiIsImEiOiJjazl5OXoxOWkwdDNjM21wczByZ201Y2lpIn0.AFfGNmlfd_6YKdXkQz3dOw";
-
-  map = new mapboxgl.Map({
-    container: "map",
-    style: "mapbox://styles/mapbox/streets-v11",
-    center: coordenadaAtual,
-    zoom: 8,
-  });
-
-  let geocoder = new MapboxGeocoder({
-    accessToken: mapboxgl.accessToken,
-    mapboxgl: mapboxgl,
-  });
-
-  new mapboxgl.Marker().setLngLat(coordenadaAtual).addTo(map);
-
-  geocoder.on("result", function (ev) {
-    longitudeAtual = ev.result.geometry.coordinates[0];
-    latitudeAtual = ev.result.geometry.coordinates[1];
-  });
-
-  let searchBox = document.getElementById("search-box");
-  if (searchBox != undefined) {
-    searchBox.innerHTML = "";
-    searchBox.appendChild(geocoder.onAdd(map));
-  }
-
-  carregarMarcadores(map);
-}
-
-let map;
-
-function carregarMarcadores(map) {
-  listaPaginada.forEach((quarto) => {
-    let el = document.createElement("div");
-    el.className = "marker";
-
-    new mapboxgl.Marker(el)
-      .setLngLat([quarto.longitude, quarto.latitude])
-      .setPopup(
-        new mapboxgl.Popup({ offset: 25 }) // add popups
-          .setHTML(criarCard(quarto))
-      )
-      .addTo(map);
-  });
-}
-
-function verificarParametros() {
-  var queryString = decodeURIComponent(window.location.search);
-
-  queryString = queryString.substring(1);
-
-  if (queryString != "") {
-    let queryString = decodeURIComponent(window.location.search);
-    let queries = queryString.split("&");
-
-    if (queries.length == 2) {
-      latitudeAtual = parseFloat(queries[0].split("=")[1]);
-      longitudeAtual = parseFloat(queries[1].split("=")[1]);
-      coordenadaAtual = [longitudeAtual, latitudeAtual];
-    }
   }
 }
