@@ -1,4 +1,4 @@
-import { criarCard } from "./components.js";
+import { criarCard } from "./components/cardElements.js";
 
 const coordenadasSP = [-46.63018217699323, -23.5379366687732]; //longitude,latitude
 let coordenadaAtual = coordenadasSP;
